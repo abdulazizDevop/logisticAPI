@@ -26,7 +26,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated',  # Bu global autentifikatsiyani talab qiladi, o‘chirib qo‘ying
         'rest_framework.permissions.AllowAny',  # Hamma uchun ruxsat
     ],
     'DEFAULT_FILTER_BACKENDS': [
