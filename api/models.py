@@ -83,6 +83,15 @@ class CargoReview(models.Model):
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, related_name='reviews')
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField()
+    choose = {
+        (0, '0'),
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+    }
+    stars = models.IntegerField(choices=choose, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

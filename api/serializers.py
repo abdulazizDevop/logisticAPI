@@ -26,7 +26,7 @@ class CargoReviewSerializer(serializers.ModelSerializer):
     customer = UserSerializer(read_only=True)
     class Meta:
         model = CargoReview
-        fields = ['id', 'cargo', 'customer', 'comment', 'created_at']
+        fields = ['id', 'cargo', 'customer', 'comment', 'stars', 'created_at']
 
 class CargoSerializer(serializers.ModelSerializer):
     driver = DriverProfileSerializer(read_only=True)
