@@ -125,9 +125,14 @@ class Advertisement(models.Model):
         ('Rad etilgan', 'Rad etilgan'),
     )
     TYPE_CHOICES = (
-        ('Banner', 'Banner'),
-        ('Video', 'Video'),
-        ('Text', 'Text'),
+        ('Native', 'Native Reklama'),
+        ('Boost', 'Boost Reklama'),
+        ('SuperTop', 'Super Top Reklama'),
+        ('Splash', 'Splash Reklama'),
+        ('INterstitial', 'INterstitial Reklama'),
+        ('TOP', 'TOP E\'lon'),
+        ('E\'lonni ko\'tarish', 'E\'lonni yuqoriga ko\'tarish'),
+        ('Maxsus', 'Maxsus Reklama'),
     )
     DURATION_CHOICES = (
         (1, '1 kun'),
