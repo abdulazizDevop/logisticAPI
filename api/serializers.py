@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, DriverProfile, Cargo, CargoReview
+from .models import User, DriverProfile, Cargo, CargoReview, Advertisement, ContactMessage
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,3 +36,31 @@ class CargoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cargo
         fields = ['id', 'customer', 'driver', 'name', 'weight', 'origin', 'destination', 'vehicle_type', 'status', 'created_at', 'reviews', 'price', 'description']
+
+
+# serializers.py ga qo'shilishi kerak
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = ['id', 'name', 'email', 'phone_number', 'subject', 'message', 'created_at']
+        read_only_fields = ['status']
+
+class AdvertisementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Advertisement
+        fields = ['id', 'company_name', 'ad_type', 'duration_days', 'phone_number', 'description', 
+                 'status', 'is_active', 'created_at', 'media_file', 'start_date', 'end_date']
+        read_only_fields = ['status', 'is_active', 'media_file', 'start_date', 'end_date']
+
+
+class AdvertisementCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Advertisement
+        fields = ['company_name', 'ad_type', 'duration_days', 'phone_number', 'description']
+
+
+class AdminAdvertisementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Advertisement
+        fields = ['id', 'company_name', 'ad_type', 'duration_days', 'phone_number', 'description', 
+                 'status', 'is_active', 'created_at', 'media_file', 'start_date', 'end_date', 'admin_notes']

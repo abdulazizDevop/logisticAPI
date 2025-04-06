@@ -1,12 +1,13 @@
+from rest_framework import status
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer, DriverProfileSerializer, CargoSerializer, CargoReviewSerializer
-from .models import User, DriverProfile, Cargo, CargoReview
 from django.contrib.auth import authenticate
-
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .models import User, DriverProfile, Cargo, CargoReview, Advertisement
+from .serializers import (UserSerializer, DriverProfileSerializer, CargoSerializer, CargoReviewSerializer, 
+                          AdvertisementSerializer, AdvertisementCreateSerializer, ContactMessageSerializer)
 
 # Registratsiya (Ochiq)
 class RegisterView(APIView):
@@ -122,3 +123,70 @@ class CargoReviewCreateView(APIView):
             serializer.save(customer=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class ContactMessageView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = ContactMessageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Xabaringiz muvaffaqiyatli yuborildi"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AdvertisementRequestView(APIView):
+    """
+    Foydalanuvchilar uchun reklama so'rovini yuborish API
+    """
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = AdvertisementCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "Reklama so'rovingiz qabul qilindi. Administrator tez orada siz bilan bog'lanadi."
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ActiveAdvertisementsView(APIView):
+    """
+    Frontend uchun faol reklamalarni qaytaruvchi API
+    """
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        current_date = timezone.now().date()
+        # Faqat tasdiqlangan, faol va muddati tugamagan reklamalarni qaytarish
+        advertisements = Advertisement.objects.filter(
+            status='Tasdiqlangan',
+            is_active=True,
+            start_date__lte=current_date,
+            end_date__gte=current_date,
+            media_file__isnull=False  # Media fayli bo'lgan reklamalarni olish
+        )
+        serializer = AdvertisementSerializer(advertisements, many=True)
+        return Response(serializer.data)
+
+
+class AdvertisementsByTypeView(APIView):
+    """
+    Frontend uchun reklama turlariga qarab reklamalarni qaytaruvchi API
+    """
+    permission_classes = [AllowAny]
+    
+    def get(self, request, ad_type):
+        current_date = timezone.now().date()
+        # Turi bo'yicha reklama tanlash
+        advertisements = Advertisement.objects.filter(
+            status='Tasdiqlangan',
+            is_active=True,
+            ad_type=ad_type,
+            start_date__lte=current_date,
+            end_date__gte=current_date,
+            media_file__isnull=False
+        )
+        serializer = AdvertisementSerializer(advertisements, many=True)
+        return Response(serializer.data)

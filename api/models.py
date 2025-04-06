@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 class UserManager(BaseUserManager):
     def create_user(self, phone_number, password=None, **extra_fields):
@@ -96,3 +96,62 @@ class CargoReview(models.Model):
 
     def __str__(self):
         return f"{self.customer.name} sharhi"
+    
+
+# models.py ga qo'shilishi kerak
+class ContactMessage(models.Model):
+    STATUS_CHOICES = (
+        ('Yangi', 'Yangi'),
+        ('O\'qilgan', 'O\'qilgan'),
+        ('Javob berilgan', 'Javob berilgan'),
+    )
+    
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=20)
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Yangi')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} - {self.subject}"
+
+
+class Advertisement(models.Model):
+    STATUS_CHOICES = (
+        ('Korib chiqilmoqda', 'Korib chiqilmoqda'),
+        ('Tasdiqlangan', 'Tasdiqlangan'),
+        ('Rad etilgan', 'Rad etilgan'),
+    )
+    TYPE_CHOICES = (
+        ('Banner', 'Banner'),
+        ('Video', 'Video'),
+        ('Text', 'Text'),
+    )
+    DURATION_CHOICES = (
+        (1, '1 kun'),
+        (3, '3 kun'),
+        (7, '1 hafta'),
+        (14, '2 hafta'),
+        (30, '1 oy'),
+    )
+    
+    company_name = models.CharField(max_length=200)
+    ad_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='Banner')
+    duration_days = models.IntegerField(choices=DURATION_CHOICES, default=1)
+    phone_number = models.CharField(max_length=20)
+    description = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Korib chiqilmoqda')
+    is_active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Admin tomonidan to'ldiriladi
+    media_file = models.FileField(upload_to='advertisements/', null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    admin_notes = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"{self.company_name} - {self.ad_type}"
